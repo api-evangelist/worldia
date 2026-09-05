@@ -1,0 +1,34 @@
+generated: '2026-09-04'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: corp.worldia.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov 12 10:22:52 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
+  hsts_include_subdomains: false
+  hsts_preload: false
+- host: api.worldia.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Oct 21 14:33:08 2026 GMT
+  hsts: true
+  hsts_max_age: 2592000
+  hsts_include_subdomains: true
+  hsts_preload: true
+  note: 'HSTS corrected by direct probe on 2026-09-04: the automated pass recorded null because api.worldia.com
+    answers its root path with HTTP 404, but the header is present on both the 404 root and on 200 responses
+    — "strict-transport-security: max-age=2592000; includeSubDomains; preload". The API host carries includeSubDomains
+    and preload, which the corporate host (max-age=31536000, neither directive) does not.'
+domains:
+- domain: worldia.com
+  dnssec: true
+  caa: []
+  spf: true
+  dmarc: true
+  dmarc_policy: none
+note: worldia.com publishes DNSSEC, SPF and DMARC but the DMARC policy is p=none, which requests reporting
+  only and does not instruct receivers to quarantine or reject spoofed mail. No CAA record is published,
+  so any public CA may issue for the domain. No security.txt is served on any host (see well-known/worldia-well-known.yml).

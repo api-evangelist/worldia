@@ -1,0 +1,127 @@
+generated: '2026-09-04'
+method: searched
+source: https://packagist.org/packages/worldia/
+name: Worldia Published Packages
+description: >-
+  First-party packages published by Worldia. Searched npm, PyPI, Packagist, RubyGems,
+  crates.io, NuGet, Maven Central and pkg.go.dev, plus the github.com/worldia organization
+  (22 repositories). Everything Worldia publishes is PHP/Symfony engineering tooling on
+  Packagist. NONE of it is a client library for the Worldia API.
+sdk_note: >-
+  No API client SDK exists in any language. The packages below are internal engineering
+  tooling that Worldia open-sources — observability, coding standards and a third-party
+  translation-service client — not wrappers around api.worldia.com. Because of that, no
+  `SDKs` pointer is wired in apis.yml: sdk_count is meant to measure client libraries an
+  integrator can install to call the API, and counting these would overstate what Worldia
+  offers an integrator by four.
+registries_searched:
+  - registry: packagist
+    result: 5 first-party packages
+  - registry: npm
+    result: none
+  - registry: pypi
+    result: none
+  - registry: rubygems
+    result: none
+  - registry: crates.io
+    result: none
+  - registry: nuget
+    result: none
+  - registry: maven-central
+    result: none
+  - registry: pkg.go.dev
+    result: none
+
+packages:
+  - name: worldia/instrumentation-bundle
+    registry: packagist
+    official: true
+    is_api_client: false
+    version: 3.0.1
+    published: '2026-07-09'
+    downloads_total: 78735
+    stars: 28
+    language: PHP
+    description: 'Symfony OpenTelemetry auto-instrumentation: requests, commands, messenger, doctrine.'
+    repository: https://github.com/worldia/instrumentation-bundle
+    url: https://packagist.org/packages/worldia/instrumentation-bundle
+    note: >-
+      Worldia's most substantial open-source contribution and the only one under active
+      maintenance. It is also the mechanism behind the tracing conventions recorded in
+      conventions/worldia-conventions.yml — the x-trace-id / x-span-id headers and W3C
+      traceparent support on api.worldia.com are this bundle running in production.
+  - name: worldia/coding-standards
+    registry: packagist
+    official: true
+    is_api_client: false
+    version: 1.0.3
+    published: '2025-07-07'
+    downloads_total: 15367
+    stars: 0
+    language: PHP
+    description: Worldia Coding Standards
+    repository: https://github.com/worldia/coding-standards
+    url: https://packagist.org/packages/worldia/coding-standards
+  - name: worldia/contexts
+    registry: packagist
+    official: true
+    is_api_client: false
+    version: 3.3.4
+    published: '2022-08-02'
+    downloads_total: 679
+    stars: 0
+    language: Gherkin
+    description: 'Behat test contexts (fork of behatch/contexts).'
+    repository: https://github.com/worldia/contexts
+    url: https://packagist.org/packages/worldia/contexts
+    note: 'Fork of an upstream project, maintained under the Worldia namespace.'
+  - name: worldia/textmaster-api
+    registry: packagist
+    official: true
+    is_api_client: false
+    version: v1.1.0
+    published: '2018-06-27'
+    downloads_total: 23690
+    stars: 1
+    language: PHP
+    description: 'Textmaster API v1 client — a client for a third-party translation service, not for Worldia.'
+    repository: https://github.com/worldia/textmaster-api
+    url: https://packagist.org/packages/worldia/textmaster-api
+    note: >-
+      Unreleased for eight years. Worldia authors it but it calls TextMaster, so it is not a
+      Worldia API SDK by either test.
+  - name: worldia/textmaster-bundle
+    registry: packagist
+    official: true
+    is_api_client: false
+    version: v2.2.0
+    published: '2018-06-27'
+    downloads_total: 15898
+    stars: 0
+    language: PHP
+    description: A Symfony bundle integrating textmaster-api.
+    repository: https://github.com/worldia/textmaster-bundle
+    url: https://packagist.org/packages/worldia/textmaster-bundle
+    note: 'Unreleased for eight years; companion to worldia/textmaster-api.'
+
+not_published:
+  - name: worldia/addressing-bundle
+    repository: https://github.com/worldia/addressing-bundle
+    version: null
+    published: null
+    note: >-
+      Public repository (a fork of the commerceguys addressing integration) with no
+      Packagist listing — checked packagist.org/packages/worldia/addressing-bundle.json,
+      which returns no package. Recorded as checked-and-absent rather than omitted.
+  - name: worldia/database-anonymizer
+    repository: https://github.com/worldia/database-anonymizer
+    version: null
+    published: null
+    note: 'Public fork, no Packagist listing under the worldia namespace.'
+
+currency_summary: >-
+  One package is current (instrumentation-bundle, released 2026-07-09, two months before
+  this pass). One is a year old. Three have not been released since 2018 or 2022. Because
+  none of them wraps the Worldia API, the usual abandonment inference — a stale SDK trailing
+  the API it wraps — does not apply here; the relevant finding is the absence of any client
+  library at all.

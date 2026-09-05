@@ -1,0 +1,125 @@
+generated: '2026-09-04'
+method: probed
+source: https://api.worldia.com/customers
+name: Worldia API Authentication
+description: >-
+  Authentication profile for the Worldia production API, established by probing
+  https://api.worldia.com anonymously on 2026-09-04. Worldia publishes no authentication
+  documentation, no developer portal and no self-service signup, so this profile is read
+  from live challenge responses rather than from a docs page.
+docs: null
+
+schemes:
+  - id: bearerJwt
+    type: http
+    scheme: bearer
+    bearer_format: JWT
+    in: header
+    header: Authorization
+    evidence:
+      url: https://api.worldia.com/customers
+      http_status: 401
+      response_header: 'www-authenticate: Bearer'
+      response_body: '{"code":401,"message":"JWT Token not found"}'
+    implementation: >-
+      The challenge string "JWT Token not found" is the default message of
+      LexikJWTAuthenticationBundle, the Symfony JWT bundle that Worldia forks publicly in its
+      own GitHub organization (github.com/worldia/LexikJWTAuthenticationBundle, alongside
+      github.com/worldia/JWTRefreshTokenBundle). The refresh-token fork indicates a
+      refresh-token flow exists behind the wall, though no refresh endpoint is publicly
+      routed.
+    token_endpoint: unknown
+    token_endpoint_note: >-
+      No token endpoint is publicly routed under the conventional names. POST to
+      /authentication_token, /login_check, /api/login_check, /token, /oauth/token and
+      /refresh_token all return 404. POST /login returns 400 rather than 404, so a route
+      exists at that path, but no request shape is documented and none was guessed.
+
+  - id: channelHeader
+    type: apiKey
+    in: header
+    header: X-Channel
+    role: tenant-selector
+    is_credential: false
+    evidence:
+      url: https://api.worldia.com/inspirations
+      http_status: 400
+      detail: 'You must set the "X-Channel" header to a registered channel.'
+    note: >-
+      X-Channel is a required tenant discriminator, not a secret. It is explicitly NOT a
+      credential: the complete set of 388 valid channel codes is readable anonymously at
+      GET /channels, and supplying one grants access to the public catalogue surface without
+      any token. It is recorded here because a caller cannot reach channel-scoped
+      collections without it, so it belongs in any integration's request-signing path even
+      though it carries no authorization weight.
+
+oauth2:
+  supported: false
+  evidence: >-
+    /.well-known/openid-configuration and /.well-known/oauth-authorization-server return 404
+    on every Worldia host probed (worldia.com, www, corp, api, content, careers,
+    experts-usa, static). No OAuth flow, authorization server or scope surface is published.
+scopes:
+  published: false
+  artifact: null
+  note: >-
+    scopes/ is deliberately not written. The API is bearer-JWT authenticated with no OAuth2
+    securityScheme and no published permission reference, so there is no scope surface to
+    record; an empty scopes artifact would assert a structure Worldia does not have.
+
+mtls:
+  supported: unknown
+openid_connect:
+  supported: false
+
+anonymous_surface:
+  description: >-
+    An unusually large read surface is reachable with no credential at all, which is worth
+    recording because it is the only part of this API a third party can actually evaluate.
+  collections:
+    - path: /channels
+      http_status: 200
+      total_items: 388
+      requires_channel_header: false
+    - path: /locations
+      http_status: 200
+      requires_channel_header: false
+      note: 'Verified via GET /locations?type=continent&promoted=true (10 items).'
+    - path: /themes
+      http_status: 200
+      total_items: 24
+      requires_channel_header: true
+    - path: /accommodations
+      http_status: 200
+      total_items: 16943
+      requires_channel_header: true
+    - path: /inspirations
+      http_status: 200
+      total_items: 971
+      requires_channel_header: true
+    - path: /airports
+      http_status: 200
+      total_items: 0
+      requires_channel_header: true
+    - path: /contexts/{Type}
+      http_status: 200
+      requires_channel_header: false
+      note: 'JSON-LD context documents; see json-ld/worldia-json-ld.yml.'
+  authenticated_only:
+    - path: /customers
+      http_status: 401
+      challenge: 'www-authenticate: Bearer'
+    - path: /templates
+      http_status: 403
+      detail: 'Unable to access as unauthorized user'
+  inconsistency_note: >-
+    /customers rejects anonymous callers with 401 while /templates rejects them with 403.
+    Both are anonymous requests, so both should be 401 under RFC 9110; a client cannot rely
+    on the status code to decide whether to acquire a token or to give up.
+
+access_model:
+  self_service: false
+  note: >-
+    There is no signup, no key issuance page and no sandbox. Access is obtained through a
+    commercial partnership — the only conversion path on corp.worldia.com is a HubSpot
+    "Book a demo" form. See plans/worldia-plans-pricing.yml.

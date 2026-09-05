@@ -1,0 +1,42 @@
+generated: '2026-09-04'
+method: searched
+source: https://corp.worldia.com/
+name: Worldia Plans and Pricing
+plan_count: 0
+plans: []
+description: >-
+  Worldia publishes no pricing of any kind — no plan tiers, no rate card, no API metering or
+  quota disclosure, and no self-service signup that would reveal one.
+evidence:
+  - url: https://corp.worldia.com/pricing
+    http_status: 404
+  - url: https://corp.worldia.com/
+    http_status: 200
+    note: >-
+      The corporate homepage carries no pricing navigation item. The only conversion paths
+      are "Book a demo" (a HubSpot form) and "Book a trip" (the consumer booking storefront).
+  - url: https://corp.worldia.com/sitemap.xml
+    http_status: 200
+    note: 'Empty urlset — no page index to search for a pricing page.'
+  - url: https://api.worldia.com/
+    http_status: 404
+    note: 'No machine-readable pricing, product or catalog endpoint is exposed on the API host.'
+commercial_model:
+  type: enterprise-partnership
+  self_service: false
+  signup: false
+  free_tier: false
+  trial: false
+  note: >-
+    Access to the Worldia platform is negotiated commercially. Worldia is B2B2C: it signs
+    distribution partners — travel retailers, agent networks, brands such as l'tur and
+    Travelexperts — and provisions each as a channel with its own branded storefront. The
+    388 channels readable at GET /channels are the shape of that business, and each one
+    represents a signed partner rather than a self-service account. Worldia markets a
+    "24-hour" turnkey integration, which is a delivery promise made inside a signed
+    engagement, not a signup flow.
+  conversion_path: https://share.hsforms.com/1MISGoMI5Spmh025GTEiHog4nazr
+finding: >-
+  plan_count is 0 because Worldia genuinely publishes no plans, not because none were found.
+  A buyer cannot estimate cost, and an agent cannot provision access, without a sales
+  conversation.

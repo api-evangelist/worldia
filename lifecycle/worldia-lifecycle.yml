@@ -1,0 +1,115 @@
+generated: '2026-09-04'
+method: searched
+source: https://corp.worldia.com/
+name: Worldia API Lifecycle
+description: >-
+  Versioning, deprecation, status and support posture for the Worldia API. Searched the
+  corporate site, the API host and the GitHub organization on 2026-09-04. Almost every field
+  here is an absence, and each absence was probed rather than assumed.
+
+versioning:
+  scheme: none-published
+  in_path: false
+  path_evidence: 'GET https://api.worldia.com/v1 and /v2 both return HTTP 404.'
+  in_header: false
+  header_evidence: >-
+    No version header appears on any response. An `X-Standard` header participates in
+    content negotiation (it is listed in Vary and in access-control-allow-headers) but no
+    value set is documented and the values tried produced no observable change.
+  in_media_type: false
+  media_type_evidence: >-
+    The vendor media type is application/vnd.worldia+json with no version parameter — the
+    obvious place to carry one (application/vnd.worldia.v1+json) is unused.
+  finding: >-
+    A caller has no way to pin a version and no signal that a version exists. Combined with
+    the absent deprecation policy below, an integrator has no published mechanism by which
+    a breaking change would be announced or survivable.
+
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: not-observed
+  deprecation_header: not-observed
+  rfc8594_support: false
+  evidence: >-
+    No Sunset or Deprecation response header appeared on any of the collections probed
+    (/channels, /locations, /themes, /accommodations, /inspirations, /contexts/{Type}). No
+    deprecation, sunset or end-of-life policy page exists on corp.worldia.com.
+  deprecated_operations: []
+  deprecated_operations_note: >-
+    Cannot be derived: no OpenAPI is published, so there is no `deprecated: true` flag to
+    read. Absence of a list here means unmeasurable, not zero.
+
+status_page:
+  exists: false
+  url: null
+  evidence:
+    - url: https://status.worldia.com/
+      http_status: 404
+    - url: https://corp.worldia.com/
+      http_status: 200
+      note: 'No status, uptime or incident link anywhere on the corporate site.'
+  third_party_checked: >-
+    No Statuspage, Instatus, Better Stack or Atlassian-hosted status page was found for
+    worldia.com.
+  consequence: >-
+    No StatusPage pointer is wired in apis.yml. A partner running a storefront on this API
+    has no published incident channel.
+
+sla:
+  published: false
+  note: >-
+    No SLA, uptime commitment or support-response target is published. Worldia markets 24/7
+    traveler support as a service to end travelers; that is a consumer support promise, not
+    an API availability commitment, and the two should not be conflated.
+
+changelog:
+  published: false
+  url: null
+  evidence:
+    - url: https://corp.worldia.com/blog
+      http_status: 404
+    - url: https://blog.worldia.com/
+      http_status: 404
+  note: >-
+    No dated changelog, release notes or API updates page exists on any Worldia surface. The
+    corporate sitemap at https://corp.worldia.com/sitemap.xml is an empty urlset, so there is
+    no crawlable index of pages to search either. No changelog/ artifact is written and no
+    ChangeLog pointer is wired — there is nothing to point at.
+
+support:
+  channels:
+    - type: contact-form
+      url: https://corp.worldia.com/contact
+      http_status: 200
+    - type: demo-request
+      url: https://share.hsforms.com/1MISGoMI5Spmh025GTEiHog4nazr
+      http_status: 200
+  developer_support: none
+  note: >-
+    There is no developer support channel — no forum, community, Slack, Discord, ticketing
+    system or support email addressed to integrators. The only inbound paths are a corporate
+    contact form and a HubSpot demo-booking form, both aimed at prospective commercial
+    partners.
+
+github:
+  organization: https://github.com/worldia
+  repositories: 22
+  most_recent_activity: '2026-07-09 (worldia/instrumentation-bundle)'
+  note: >-
+    The organization is live and maintained, but it contains engineering tooling only. No
+    repository holds an API specification, an SDK, examples or documentation for the Worldia
+    API. See packages/worldia-packages.yml.
+
+maturity_signals:
+  api_is_production: true
+  api_is_documented: false
+  api_is_self_service: false
+  summary: >-
+    This is a mature, actively operated production API — TLS 1.3, HSTS with preload,
+    OpenTelemetry tracing, an HTTP cache layer, ETags, content negotiation across three
+    representations, 388 live tenants and 16,943 catalogued properties — with none of the
+    lifecycle apparatus a third-party integrator would need: no version, no deprecation
+    policy, no changelog, no status page, no SLA and no developer support channel. The
+    engineering is well ahead of the developer-facing posture, which is consistent with an
+    API built for a managed partner-integration motion rather than for self-service adoption.

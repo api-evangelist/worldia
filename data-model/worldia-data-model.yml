@@ -1,0 +1,335 @@
+generated: '2026-09-04'
+method: derived
+source: json-ld/ (16 JSON-LD context documents fetched from https://api.worldia.com/contexts/{Type})
+name: Worldia Data Model
+description: >-
+  Entity-relationship graph of the Worldia API, derived from the sixteen JSON-LD context
+  documents saved verbatim in json-ld/. Each context declares its type's property names
+  against the vocabulary IRI https://api.worldia.com/docs.jsonld#, and marks a property as
+  a reference to another resource by giving it "@type": "@id". Those @id-typed properties
+  are the only relationship evidence Worldia publishes, and they are what the relationships
+  below are built from.
+derivation_method: >-
+  A property declared as a plain string mapping (e.g. "stars": "Accommodation/stars") is a
+  scalar attribute. A property declared as an object with "@type": "@id" (e.g. "customer":
+  {"@id": "Trip/customer", "@type": "@id"}) is an IRI reference to another resource. The
+  JSON-LD context does not state the TARGET type or the cardinality of a reference, so
+  target and cardinality below are inferred from the property name and from IRI shapes
+  actually observed in live responses (for example hydra:member entries returning
+  "channel": "/channels/B2C-WO"). Where the target could not be established from evidence
+  it is recorded as unknown rather than guessed, and confidence is marked accordingly.
+limitations:
+  - >-
+    Context documents carry no datatypes, no required/optional flags, no cardinality and no
+    range constraints. This graph therefore records which entities reference which, not the
+    shape of the values.
+  - >-
+    Type coverage is evidence-led, not exhaustive. Sixteen types were confirmed to resolve
+    at /contexts/{Type}; types reachable only behind authentication may exist and would not
+    appear here. /contexts/Inspiration and /contexts/Product both return 404, even though
+    /inspirations is a live collection — inspirations are served as Template resources
+    (their members carry "@id": "/templates/2394"), which is itself a finding: the
+    collection name and the resource type differ.
+  - 'No subway/ render exists for this provider.'
+
+entities:
+  - name: Trip
+    context: json-ld/worldia-context-trip.jsonld
+    field_count: 113
+    role: 'Central aggregate — the tailor-made itinerary being built, priced, saved and booked.'
+    lifecycle_fields: [state, savedAt, archivedAt, scheduledDeletionDate]
+    note: >-
+      The largest type in the model and the only one whose fields plainly imply a write
+      lifecycle (state transitions, save, archive, scheduled deletion, checkouts, payments,
+      deposit). No operation for any of those transitions is documented; see the
+      reversibility block in conventions/worldia-conventions.yml.
+  - name: Channel
+    context: json-ld/worldia-context-channel.jsonld
+    field_count: 97
+    role: >-
+      Distribution tenant. Carries per-partner branding (design.styles.colors, fonts, logo,
+      favicon), hostname, default currency and locale, and the legal document set served to
+      that partner's travelers. 388 exist and all are readable anonymously.
+  - name: Location
+    context: json-ld/worldia-context-location.jsonld
+    field_count: 70
+    role: 'Geographic node in a hierarchy (continent -> country -> region -> locality).'
+    note: >-
+      Typed as https://schema.org/Place in live JSON-LD responses. Identified by a
+      hierarchical IRI, e.g. /locations/io/re/saint-paul/saint-gilles, with a `hierarchy`
+      field mirroring the path and a `simplifiedType` naming the level.
+  - name: Accommodation
+    context: json-ld/worldia-context-accommodation.jsonld
+    field_count: 65
+    role: 'Bookable property. 16,943 readable anonymously with a channel header.'
+  - name: Transfer
+    context: json-ld/worldia-context-transfer.jsonld
+    field_count: 49
+    role: 'Ground transfer between two places.'
+  - name: Train
+    context: json-ld/worldia-context-train.jsonld
+    field_count: 44
+    role: 'Rail segment between two places.'
+  - name: Agent
+    context: json-ld/worldia-context-agent.jsonld
+    field_count: 39
+    role: 'Travel advisor or seller operating within a channel.'
+  - name: Template
+    context: json-ld/worldia-context-template.jsonld
+    field_count: 38
+    role: >-
+      Reusable itinerary blueprint. This is the resource the /inspirations collection
+      returns — 971 of them, each with name, slug, themes, countries, numberOfDays and an
+      ordered steps[] of locations.
+  - name: Airport
+    context: json-ld/worldia-context-airport.jsonld
+    field_count: 31
+    role: 'Air gateway reference data.'
+  - name: Payment
+    context: json-ld/worldia-context-payment.jsonld
+    field_count: 31
+    role: 'Payment against a trip.'
+  - name: Route
+    context: json-ld/worldia-context-route.jsonld
+    field_count: 31
+    role: 'Path between two places.'
+  - name: Theme
+    context: json-ld/worldia-context-theme.jsonld
+    field_count: 25
+    role: 'Trip categorization, e.g. /themes/smart_budget. 24 exist.'
+  - name: Customer
+    context: json-ld/worldia-context-customer.jsonld
+    field_count: 24
+    role: 'Traveler / buyer record. Authenticated-only (GET /customers returns 401).'
+  - name: Car
+    context: json-ld/worldia-context-car.jsonld
+    field_count: 13
+    role: 'Car hire product.'
+  - name: Document
+    context: json-ld/worldia-context-document.jsonld
+    field_count: 13
+    role: 'Attached document (referenced by Channel for legal/terms artifacts).'
+  - name: Place
+    context: json-ld/worldia-context-place.jsonld
+    field_count: 8
+    role: >-
+      Minimal geographic value object, referenced as the from/to endpoints of Route,
+      Transfer and Train. Distinct from Location, which is the richer catalogued hierarchy.
+
+relationships:
+  - from: Trip
+    to: Customer
+    type: belongs_to
+    via: customer
+    confidence: high
+  - from: Trip
+    to: Agent
+    type: belongs_to
+    via: agent
+    confidence: high
+  - from: Trip
+    to: Channel
+    type: belongs_to
+    via: channel
+    confidence: high
+  - from: Trip
+    to: Template
+    type: belongs_to
+    via: template
+    confidence: high
+    note: 'A trip is built from a template; Trip also carries a non-IRI originalTrip field for copies.'
+  - from: Trip
+    to: Payment
+    type: has_many
+    via: payments
+    confidence: high
+    note: 'Reciprocal of Payment.trip.'
+  - from: Trip
+    to: Theme
+    type: has_many
+    via: themes
+    confidence: high
+  - from: Trip
+    to: unknown
+    type: has_many
+    via: checkouts
+    confidence: medium
+    note: 'A Checkout type is implied but /contexts/Checkout was not confirmed.'
+  - from: Trip
+    to: unknown
+    type: belongs_to
+    via: adminUser
+    confidence: medium
+    note: 'An internal user type; /contexts/AdminUser not confirmed. Also referenced by Template.'
+  - from: Trip
+    to: unknown
+    type: belongs_to
+    via: consistencyReviewer
+    confidence: medium
+    note: 'Named reviewer role on a trip; target type not published.'
+  - from: Payment
+    to: Trip
+    type: belongs_to
+    via: trip
+    confidence: high
+  - from: Customer
+    to: Channel
+    type: belongs_to
+    via: channel
+    confidence: high
+  - from: Template
+    to: Agent
+    type: belongs_to
+    via: agent
+    confidence: high
+  - from: Template
+    to: Location
+    type: has_many
+    via: locations
+    confidence: high
+  - from: Template
+    to: Theme
+    type: has_many
+    via: themes
+    confidence: high
+  - from: Template
+    to: unknown
+    type: belongs_to
+    via: adminUser
+    confidence: medium
+  - from: Accommodation
+    to: Location
+    type: has_many
+    via: locations
+    confidence: high
+  - from: Location
+    to: Channel
+    type: has_many
+    via: channels
+    confidence: high
+    note: 'Which channels a location is offered in — the multi-tenant catalogue scoping.'
+  - from: Theme
+    to: Channel
+    type: has_many
+    via: channels
+    confidence: high
+  - from: Channel
+    to: Location
+    type: has_many
+    via: locations
+    confidence: high
+  - from: Channel
+    to: Location
+    type: has_many
+    via: suggestedDestinations
+    confidence: medium
+    note: 'Curated subset surfaced on the channel homepage; target inferred as Location.'
+  - from: Channel
+    to: Theme
+    type: has_many
+    via: themes
+    confidence: high
+  - from: Channel
+    to: unknown
+    type: has_many
+    via: paymentMethods
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: salesConditions
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: privacyPolicy
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: legalTerms
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: generalTermsOfUse
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: proFormaInvoice
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: checkoutSalesConditions
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: checkoutPrivacyPolicy
+    confidence: medium
+  - from: Channel
+    to: Document
+    type: has_one
+    via: euPackageRights
+    confidence: medium
+    note: >-
+      A per-channel EU Package Travel Directive rights document. Notable as a regulatory
+      signal: the model carries package-travel and financial-protection disclosures as
+      first-class per-tenant fields.
+  - from: Channel
+    to: Document
+    type: has_one
+    via: financialProtection
+    confidence: medium
+  - from: Route
+    to: Place
+    type: belongs_to
+    via: fromPlace
+    confidence: high
+  - from: Route
+    to: Place
+    type: belongs_to
+    via: toPlace
+    confidence: high
+  - from: Transfer
+    to: Place
+    type: belongs_to
+    via: fromPlace
+    confidence: high
+  - from: Transfer
+    to: Place
+    type: belongs_to
+    via: toPlace
+    confidence: high
+  - from: Train
+    to: Place
+    type: belongs_to
+    via: fromPlaceIri
+    confidence: high
+  - from: Train
+    to: Place
+    type: belongs_to
+    via: toPlaceIri
+    confidence: high
+
+identifier_conventions:
+  style: IRI
+  examples:
+    - '/channels/{code} — e.g. /channels/B2C-WO (business code, not a surrogate id)'
+    - '/locations/{hierarchy} — e.g. /locations/eu, /locations/io/re/saint-paul/saint-gilles'
+    - '/templates/{integer} — e.g. /templates/2394'
+    - '/themes/{slug} — e.g. /themes/smart_budget'
+  blank_nodes: >-
+    Embedded value objects (e.g. a Location's coords) receive skolem IRIs of the form
+    /.well-known/genid/{20-hex}, an RDF blank-node identifier emitted by API Platform.
+  note: >-
+    Trip additionally carries both `id` and `idHashed`, plus a `key` and a `hubspotId`,
+    indicating an externally-safe identifier distinct from the internal one and a CRM join
+    to HubSpot.
+
+counts:
+  entities: 16
+  relationships: 37
+  total_declared_terms: 723

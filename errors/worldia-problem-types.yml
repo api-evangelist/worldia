@@ -1,0 +1,99 @@
+generated: '2026-09-04'
+method: probed
+source: https://api.worldia.com/
+name: Worldia API Error Catalog
+description: >-
+  Error responses observed on the Worldia production API by probing
+  https://api.worldia.com anonymously on 2026-09-04. Worldia publishes no error reference,
+  so this catalog is built entirely from responses actually received — no status code,
+  message or remediation below is inferred.
+format: rfc7807
+rfc9457_compliant: partial
+envelope:
+  media_type: application/problem+json
+  fields:
+    - name: type
+      note: >-
+        Always the literal string https://tools.ietf.org/html/rfc2616#section-10 on every
+        error observed, regardless of the failure. Under RFC 7807/9457 `type` is the
+        machine-readable discriminator; here it is a constant, so a client cannot branch on
+        it and must fall back to the HTTP status code and the human-readable `detail`.
+    - name: title
+      note: 'Always the literal string "An error occurred". Carries no information.'
+    - name: status
+      note: 'Present on some responses (e.g. 404 from the routed API) and absent on others (400, 406).'
+    - name: detail
+      note: 'The only field that varies meaningfully. Sometimes an empty string.'
+    - name: trace
+      note: >-
+        Non-standard member carrying the request trace id, matching the x-trace-id response
+        header. Useful to quote to support; it is the one genuinely actionable part of the
+        envelope.
+second_envelope:
+  note: >-
+    Authentication failures do NOT use problem+json. They return a plain JSON object
+    {"code":401,"message":"JWT Token not found"} with `WWW-Authenticate: Bearer`. A client
+    must therefore parse two different error shapes depending on which layer rejected it —
+    the Lexik JWT authenticator or the API Platform error handler.
+third_envelope:
+  note: >-
+    Requests to paths outside the API router (e.g. /openapi.json, /swagger.json,
+    /.well-known/*) return an HTML Symfony error page with content-type text/html, not
+    problem+json. A client probing for a spec gets HTML, not a structured 404.
+
+problem_types:
+  - status: 400
+    title: Missing channel header
+    detail_observed: 'You must set the "X-Channel" header to a registered channel.'
+    media_type: application/problem+json
+    evidence: 'GET https://api.worldia.com/inspirations?itemsPerPage=2&page=1'
+    remediation: >-
+      Send X-Channel with a registered channel code. The valid codes are readable
+      anonymously at GET /channels.
+  - status: 401
+    title: Missing or invalid JWT
+    detail_observed: 'JWT Token not found'
+    media_type: application/json
+    response_headers: ['www-authenticate: Bearer']
+    evidence: 'GET https://api.worldia.com/customers'
+    remediation: >-
+      Present a bearer JWT. Worldia publishes no way for a third party to obtain one; see
+      authentication/worldia-authentication.yml.
+  - status: 403
+    title: Authenticated but not permitted
+    detail_observed: 'Unable to access as unauthorized user'
+    media_type: application/problem+json
+    evidence: 'GET https://api.worldia.com/templates'
+    remediation: >-
+      The collection exists and is routed but requires a principal with rights to it. Note
+      the distinction from 401: /templates rejects with 403 for an anonymous caller while
+      /customers rejects with 401, so authorization and authentication failures are not
+      reported consistently across collections.
+  - status: 404
+    title: Not Found
+    detail_observed: 'Not Found'
+    media_type: application/vnd.worldia+json
+    evidence: 'GET https://api.worldia.com/trips'
+    remediation: 'Resource or collection does not exist at that path.'
+  - status: 405
+    title: Method Not Allowed
+    detail_observed: null
+    media_type: text/html
+    response_headers: ['allow: GET']
+    evidence: 'OPTIONS https://api.worldia.com/channels'
+    remediation: >-
+      Read the `allow` header. Note that OPTIONS itself is rejected with 405 even though
+      the `allow` header on GET advertises "OPTIONS, HEAD, GET", so CORS preflight behavior
+      is inconsistent with the advertised allow-list.
+  - status: 406
+    title: Unsupported representation
+    detail_observed: 'Requested format "application/..." is not supported'
+    media_type: application/problem+json
+    evidence: 'GET https://api.worldia.com/contexts/Entrypoint with Accept: application/json'
+    remediation: 'Request application/ld+json or application/vnd.worldia+json.'
+
+gaps:
+  - 'No error code registry: nothing distinguishes one failure from another except free-text detail.'
+  - 'No documented error reference page exists to enrich these titles from.'
+  - 'The `type` URI is a constant placeholder, so RFC 9457 type-based dispatch is unavailable.'
+  - 'Three different error body shapes (problem+json, bare JSON, HTML) across one host.'

@@ -1,0 +1,46 @@
+generated: '2026-09-04'
+method: probed
+source: https://api.worldia.com/channels
+name: Worldia API Rate Limits
+limit_count: 0
+rate_limits: []
+description: >-
+  No rate limits are documented and none are signaled at runtime. Worldia publishes no
+  developer documentation in which limits could be stated, and the live API emits no
+  rate-limit headers on any response observed.
+headers_observed: []
+headers_checked:
+  - 'X-RateLimit-Limit / X-RateLimit-Remaining / X-RateLimit-Reset'
+  - 'RateLimit / RateLimit-Policy (RFC 9239 draft style)'
+  - Retry-After
+probe_evidence:
+  - url: https://api.worldia.com/channels
+    http_status: 200
+    rate_limit_headers: none
+  - url: https://api.worldia.com/accommodations
+    http_status: 200
+    rate_limit_headers: none
+  - url: https://api.worldia.com/inspirations
+    http_status: 400
+    rate_limit_headers: none
+  - url: https://api.worldia.com/customers
+    http_status: 401
+    rate_limit_headers: none
+  - url: https://api.worldia.com/templates
+    http_status: 403
+    rate_limit_headers: none
+exhaustion_status_code: unknown
+exhaustion_note: >-
+  No 429 was induced. This pass deliberately did not attempt to find the limit by flooding
+  the API — probing a live production travel platform until it breaks is not a measurement
+  this pipeline takes.
+finding: >-
+  limit_count is 0 as an honest zero: nothing is published and nothing is signaled. An agent
+  calling this API cannot know its budget in advance and cannot learn it at runtime either —
+  there is no header to read and no documented backoff contract. If a limit exists it is
+  enforced silently, which is the worst case for an autonomous caller: it will discover the
+  ceiling only by hitting it, with no Retry-After to tell it how long to wait.
+recommendation_to_provider: >-
+  Emitting RateLimit and RateLimit-Policy headers costs nothing at the edge Worldia already
+  runs (Caddy with a Souin cache in front of the API) and would give partner integrations a
+  runtime signal they currently lack.

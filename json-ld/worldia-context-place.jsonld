@@ -1,0 +1,1 @@
+{"@context":{"@vocab":"https:\/\/api.worldia.com\/docs.jsonld#","hydra":"http:\/\/www.w3.org\/ns\/hydra\/core#","addressComponents":"Place\/addressComponents","iri":"Place\/iri","coords":"Place\/coords","id":"Place\/id","name":"Place\/name","type":"Place\/type","formattedAddress":"Place\/formattedAddress","placeType":"Place\/placeType"}}

@@ -1,0 +1,214 @@
+generated: '2026-09-04'
+method: probed
+source: 'Direct HTTPS probes of /.well-known/* on every Worldia host, 2026-09-04'
+name: Worldia Well-Known Documents
+description: >-
+  Result of probing the named /.well-known/ path list on every host this record knows:
+  the registrable domain and www, the API base-URL host, the corporate/docs host, the
+  content CDN, the careers host and the consumer booking host. Exactly one path returned a
+  real document, and that document is published by a third-party SaaS vendor rather than by
+  Worldia — see ownership below. Recorded absences are data, not omissions.
+
+hosts:
+  - host: worldia.com
+    note: 'Redirects (301) to corp.worldia.com; every path below inherits that redirect.'
+    documents:
+      - path: /.well-known/security.txt
+        status: 301
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 301
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 301
+        file: null
+      - path: /.well-known/api-catalog
+        status: 301
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 301
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 301
+        file: null
+      - path: /.well-known/agent.json
+        status: 301
+        file: null
+  - host: www.worldia.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+  - host: corp.worldia.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+  - host: api.worldia.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        file: null
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+  - host: content.worldia.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+  - host: careers.worldia.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 200
+        file: well-known/worldia-careers-api-catalog.json
+        content_type: application/linkset+json
+        owner: third-party
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+      - path: /llms.txt
+        status: 200
+        file: well-known/worldia-careers-llms.txt
+        content_type: text/plain
+        owner: third-party
+  - host: experts-usa.worldia.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+  - host: static.worldia.com
+    note: 'Object store; answers 403 to any path that is not an existing document key.'
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+        file: null
+      - path: /.well-known/api-catalog
+        status: 403
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 403
+        file: null
+      - path: /.well-known/agent.json
+        status: 403
+        file: null
+
+ownership:
+  verdict: not-first-party
+  summary: >-
+    The only 200 in this probe is on careers.worldia.com, and it is not Worldia's document.
+    careers.worldia.com is a hosted Teamtailor careers site running on a Worldia subdomain:
+    its assets load from assets-aws.teamtailor-cdn.com, and the api-catalog's own
+    `service-doc` link points at https://docs.teamtailor.com/. The linkset describes
+    Teamtailor's job-feed endpoints (careers.worldia.com/jobs.json as application/feed+json
+    and /jobs.md as text/markdown), and the accompanying llms.txt is the Teamtailor
+    careers-site template listing open positions. Both are platform features of the applicant
+    tracking system, emitted for every Teamtailor customer; neither was authored by Worldia
+    and neither describes the Worldia API.
+  consequence: >-
+    No WellKnown, APICatalog, SecurityTxt or LLMsTxt pointer is wired to these files in
+    apis.yml. Crediting Worldia's API posture with its ATS vendor's discovery document would
+    be exactly the vendor-misattribution error this pipeline exists to avoid. The files are
+    saved because the probe is real and the finding is worth keeping — a reader looking at
+    careers.worldia.com/.well-known/api-catalog should be able to see why it was not counted.
+
+first_party_findings:
+  security_txt: none
+  api_catalog: none
+  openid_configuration: none
+  oauth_authorization_server: none
+  ai_plugin: none
+  agent_card: none
+  note: >-
+    Worldia serves no /.well-known/ document of its own on any host. Note separately that
+    api.worldia.com DOES mint skolem identifiers under /.well-known/genid/{hash} inside
+    JSON-LD response bodies (an RDF blank-node convention emitted by API Platform); that is
+    a value-object identifier appearing in payloads, not a discovery document served at a
+    well-known path, and it is not counted here.

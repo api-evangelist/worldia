@@ -1,0 +1,121 @@
+generated: '2026-09-04'
+method: searched
+source: https://api.worldia.com/contexts/{Type}
+name: Worldia JSON-LD Contexts
+description: >-
+  Worldia's production API (api.worldia.com) is an API Platform (Symfony) deployment that
+  content-negotiates JSON-LD. Every collection response carries a Hydra
+  `apiDocumentation` Link header and an `@context` pointing at `/contexts/{Type}`, and each
+  of those context documents is served anonymously as `application/ld+json`. The sixteen
+  documents indexed here were fetched verbatim on 2026-09-04 and are the only
+  machine-readable description of the Worldia data model that the company publishes — no
+  OpenAPI, Swagger, GraphQL SDL or Postman collection is served anywhere (see
+  conformance/worldia-conformance.yml).
+media_type: application/ld+json
+vocabulary_iri: https://api.worldia.com/docs.jsonld#
+hydra_vocabulary: http://www.w3.org/ns/hydra/core#
+discovery:
+  link_header: '<https://api.worldia.com/docs.jsonld>; rel="http://www.w3.org/ns/hydra/core#apiDocumentation"'
+  note: >-
+    The Hydra apiDocumentation Link header is emitted on every response but the document it
+    advertises returns HTTP 404 under every Accept header tried (application/ld+json,
+    application/vnd.openapi+json, application/json, text/html) and under the vendor
+    X-Standard header. The per-type `/contexts/{Type}` documents it references DO resolve,
+    so the vocabulary is reachable while the Hydra API description that would tie the
+    vocabulary to operations is not.
+contexts:
+  - type: Channel
+    file: json-ld/worldia-context-channel.jsonld
+    url: https://api.worldia.com/contexts/Channel
+    http_status: 200
+    terms: 99
+  - type: Location
+    file: json-ld/worldia-context-location.jsonld
+    url: https://api.worldia.com/contexts/Location
+    http_status: 200
+    terms: 72
+  - type: Place
+    file: json-ld/worldia-context-place.jsonld
+    url: https://api.worldia.com/contexts/Place
+    http_status: 200
+    terms: 10
+  - type: Template
+    file: json-ld/worldia-context-template.jsonld
+    url: https://api.worldia.com/contexts/Template
+    http_status: 200
+    terms: 40
+  - type: Theme
+    file: json-ld/worldia-context-theme.jsonld
+    url: https://api.worldia.com/contexts/Theme
+    http_status: 200
+    terms: 27
+  - type: Trip
+    file: json-ld/worldia-context-trip.jsonld
+    url: https://api.worldia.com/contexts/Trip
+    http_status: 200
+    terms: 115
+  - type: Customer
+    file: json-ld/worldia-context-customer.jsonld
+    url: https://api.worldia.com/contexts/Customer
+    http_status: 200
+    terms: 26
+  - type: Accommodation
+    file: json-ld/worldia-context-accommodation.jsonld
+    url: https://api.worldia.com/contexts/Accommodation
+    http_status: 200
+    terms: 67
+  - type: Airport
+    file: json-ld/worldia-context-airport.jsonld
+    url: https://api.worldia.com/contexts/Airport
+    http_status: 200
+    terms: 33
+  - type: Payment
+    file: json-ld/worldia-context-payment.jsonld
+    url: https://api.worldia.com/contexts/Payment
+    http_status: 200
+    terms: 33
+  - type: Agent
+    file: json-ld/worldia-context-agent.jsonld
+    url: https://api.worldia.com/contexts/Agent
+    http_status: 200
+    terms: 41
+  - type: Transfer
+    file: json-ld/worldia-context-transfer.jsonld
+    url: https://api.worldia.com/contexts/Transfer
+    http_status: 200
+    terms: 51
+  - type: Car
+    file: json-ld/worldia-context-car.jsonld
+    url: https://api.worldia.com/contexts/Car
+    http_status: 200
+    terms: 15
+  - type: Train
+    file: json-ld/worldia-context-train.jsonld
+    url: https://api.worldia.com/contexts/Train
+    http_status: 200
+    terms: 46
+  - type: Document
+    file: json-ld/worldia-context-document.jsonld
+    url: https://api.worldia.com/contexts/Document
+    http_status: 200
+    terms: 15
+  - type: Route
+    file: json-ld/worldia-context-route.jsonld
+    url: https://api.worldia.com/contexts/Route
+    http_status: 200
+    terms: 33
+term_count: 723
+context_count: 16
+probed_absent:
+  - type: Inspiration
+    url: https://api.worldia.com/contexts/Inspiration
+    http_status: 404
+  - type: Product
+    url: https://api.worldia.com/contexts/Product
+    http_status: 404
+note: >-
+  Type enumeration is evidence-led, not exhaustive: types were discovered from the
+  `@context` values returned by the anonymously reachable collections (/channels,
+  /locations, /themes, /accommodations, /inspirations) and then confirmed one by one
+  against /contexts/{Type}. Types behind authentication may exist that this probe cannot
+  see. Nothing here is generated — every file is the byte stream the server returned.

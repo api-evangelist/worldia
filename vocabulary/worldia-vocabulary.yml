@@ -1,0 +1,208 @@
+generated: '2026-09-04'
+method: derived
+source: json-ld/ (16 JSON-LD context documents from https://api.worldia.com/contexts/{Type})
+vocabulary:
+  name: Worldia Domain Vocabulary
+  description: >-
+    Domain vocabulary for the Worldia tailor-made travel distribution platform, derived from
+    the JSON-LD context documents the production API serves at /contexts/{Type} and from
+    live responses on the anonymously reachable collections. Term definitions describe what
+    each concept means in Worldia's model; every term named here appears in a context
+    document or a response body saved in this repository.
+  version: '2026-09-04'
+  vocabulary_iri: https://api.worldia.com/docs.jsonld#
+  note: >-
+    The vocabulary IRI that every context document declares as its @vocab —
+    https://api.worldia.com/docs.jsonld# — does not resolve; the document returns HTTP 404
+    under every Accept header tried. The terms are therefore namespaced against a dereference
+    target that is not served, which is a real defect in an otherwise well-formed JSON-LD
+    surface: a consumer can read the property names but cannot follow them to a definition.
+  terms:
+
+    - term: Channel
+      definition: >-
+        A distribution tenant — one partner's branded storefront on the Worldia platform.
+        Carries the partner's hostname, logo, favicon, colour palette and font choices,
+        default currency and locale, accepted payment methods, and the full set of legal
+        documents shown to that partner's travelers. Channels are identified by a business
+        code such as B2C-WO (Worldia's own consumer brand), B2B-TEX (Travelexperts) or
+        B2B-LTUR-DE (l'tur Deutschland). 388 exist and the whole list is readable without
+        credentials.
+      tags: [Core Concept, Multi-tenancy]
+
+    - term: X-Channel
+      definition: >-
+        The HTTP request header that selects which Channel a call is scoped to. Required on
+        channel-scoped collections; omitting it returns HTTP 400 with the detail "You must
+        set the \"X-Channel\" header to a registered channel." It is a tenant discriminator
+        rather than a credential — the valid values are published at GET /channels.
+      tags: [Protocol, Multi-tenancy]
+
+    - term: Trip
+      definition: >-
+        The central aggregate: one tailor-made itinerary being assembled, priced, saved,
+        paid for and booked. Composed of service items, linked to the customer and the
+        selling agent, scoped to a channel, optionally instantiated from a template, and
+        carrying its own state, deposit, checkouts and payments. The richest type in the
+        model at 113 declared properties.
+      tags: [Core Concept, Booking]
+
+    - term: Template
+      definition: >-
+        A reusable itinerary blueprint — a pre-designed trip shape with a name, slug,
+        themes, countries, a day count and an ordered sequence of location steps, which an
+        agent or traveler starts from instead of building an itinerary blank. This is the
+        resource type returned by the /inspirations collection.
+      tags: [Core Concept, Trip Planning]
+
+    - term: Inspiration
+      definition: >-
+        The catalogue of published Templates presented to travelers as trip ideas, exposed
+        at GET /inspirations (971 items, channel-scoped). Worth distinguishing from
+        Template: "inspiration" is the collection and the marketing concept, while the
+        resources it returns identify themselves as /templates/{id} and there is no
+        Inspiration type in the vocabulary (/contexts/Inspiration returns 404).
+      tags: [Product, Trip Planning]
+
+    - term: Theme
+      definition: >-
+        A trip categorization used to filter and group templates and trips — for example
+        /themes/smart_budget. Themes are scoped to the channels that offer them. 24 exist.
+      tags: [Taxonomy]
+
+    - term: Location
+      definition: >-
+        A catalogued geographic node in a hierarchy running continent -> country -> region
+        -> locality, identified by a hierarchical IRI (/locations/io/re/saint-paul/saint-gilles)
+        and carrying that path in a `hierarchy` field alongside `simplifiedType`, `code`,
+        `slug`, coordinates, a static map and a thumbnail. Typed as schema.org/Place in the
+        JSON-LD representation.
+      tags: [Core Concept, Geography]
+
+    - term: Place
+      definition: >-
+        The minimal geographic value object used as the from/to endpoints of a Route,
+        Transfer or Train segment. Distinct from Location: Place is a point in a journey,
+        Location is an entry in the merchandised destination catalogue.
+      tags: [Geography]
+
+    - term: Accommodation
+      definition: >-
+        A bookable property in the catalogue, carrying star rating, amenities, brands,
+        highlights, fees, check-in and check-out policy (including minimum check-in age and
+        an all-day-check-in flag), address components, coordinates, ratings, a markup policy
+        and a publication state. 16,943 are readable with a channel header.
+      tags: [Product, Inventory]
+
+    - term: Transfer
+      definition: 'A ground transfer product moving travelers between two places.'
+      tags: [Product, Transport]
+
+    - term: Train
+      definition: 'A rail segment between two places.'
+      tags: [Product, Transport]
+
+    - term: Car
+      definition: 'A car hire product.'
+      tags: [Product, Transport]
+
+    - term: Airport
+      definition: 'Air gateway reference data used to anchor flight search and itinerary steps.'
+      tags: [Reference Data, Transport]
+
+    - term: Route
+      definition: 'A path between two places, used to connect the steps of an itinerary.'
+      tags: [Trip Planning, Geography]
+
+    - term: Agent
+      definition: >-
+        A travel advisor or seller operating inside a channel, who builds and sells trips on
+        behalf of travelers. The B2B2C actor at the centre of Worldia's model.
+      tags: [Actor]
+
+    - term: Customer
+      definition: >-
+        The traveler or buyer record, scoped to a channel. Authenticated-only — GET
+        /customers returns 401 with a Bearer challenge.
+      tags: [Actor]
+
+    - term: Payment
+      definition: 'A payment recorded against a trip.'
+      tags: [Commerce, Booking]
+
+    - term: Checkout
+      definition: >-
+        A purchase attempt against a trip. Referenced from Trip as an IRI collection
+        (Trip/checkouts) but no context document is served for the type, so its own shape is
+        not published.
+      tags: [Commerce, Booking]
+
+    - term: Deposit
+      definition: >-
+        A partial up-front payment on a trip, carried as a first-class field on Trip —
+        consistent with tailor-made travel, where a booking is typically secured with a
+        deposit ahead of a balance payment.
+      tags: [Commerce]
+
+    - term: Document
+      definition: >-
+        An attached legal or commercial document. Channels reference these for sales
+        conditions, privacy policy, legal terms, general terms of use, pro-forma invoice,
+        checkout-specific sales conditions and privacy policy, EU package rights and
+        financial protection.
+      tags: [Legal, Compliance]
+
+    - term: EU Package Rights
+      definition: >-
+        A per-channel document reference (Channel/euPackageRights) carrying the traveler
+        information required by the EU Package Travel Directive (2015/2302), which governs
+        combined travel services sold as a package. Its presence as a first-class per-tenant
+        field, alongside Channel/financialProtection, indicates the platform is built to
+        distribute regulated package travel across multiple partner brands and
+        jurisdictions.
+      tags: [Compliance, Regulatory]
+
+    - term: Financial Protection
+      definition: >-
+        A per-channel document reference disclosing the insolvency protection arrangement
+        covering travelers' payments — the bonding or insurance requirement that accompanies
+        package travel sales in the EU and UK.
+      tags: [Compliance, Regulatory]
+
+    - term: Markup Policy
+      definition: >-
+        A field on Accommodation governing the margin applied over supplier net rates for a
+        given channel — the mechanism by which the same inventory is priced differently per
+        distribution partner.
+      tags: [Commerce, Pricing]
+
+    - term: Publication State
+      definition: >-
+        A workflow field on catalogue entities (Accommodation) controlling whether an item
+        is live in the merchandised catalogue, paired with a publication date.
+      tags: [Content Operations]
+
+    - term: Hydra Collection
+      definition: >-
+        The response shape returned for Accept: application/ld+json — an object with
+        @context, @id, @type "hydra:Collection", hydra:totalItems, hydra:member and a
+        hydra:view PartialCollectionView carrying first/last/next page links.
+      tags: [Protocol, Specification]
+
+    - term: hydra:search
+      definition: >-
+        An IriTemplate advertised on a collection enumerating the filter parameters it
+        accepts, each with a hydra:mapping entry naming the variable, the backing property
+        and whether it is required. On /locations this is the only published description of
+        the query parameters, and it is the closest thing Worldia serves to machine-readable
+        parameter documentation.
+      tags: [Protocol, Specification]
+
+    - term: application/vnd.worldia+json
+      definition: >-
+        Worldia's vendor media type, returned by default when no representation is
+        negotiated. Wraps results in a {meta:{totalItems,itemsPerPage,currentPage},
+        data:[...]} envelope, in contrast to the Hydra envelope returned for
+        application/ld+json.
+      tags: [Protocol]
+  term_count: 27

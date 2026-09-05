@@ -1,0 +1,24 @@
+# Worldia
+
+Append `.md` to the jobs list or any individual job URL for a markdown version (for example https://careers.worldia.com/jobs.md).
+
+## Open positions
+
+- [All open positions](https://careers.worldia.com/jobs): Browse every currently open job. Also available as markdown at https://careers.worldia.com/jobs.md and as a JSON Feed with embedded JobPosting data at https://careers.worldia.com/jobs.json.
+- [Sales Account Manager (USA Region)](https://careers.worldia.com/jobs/8203972-sales-account-manager-usa-region): Sales & Biz Dev · Berlin · Hybrid
+- [US Regional Ambassador (Travel Advisor - Customer Success)](https://careers.worldia.com/jobs/8069175-us-regional-ambassador-travel-advisor-customer-success): United States · Remote
+
+## Key pages
+
+- [Benefits & Culture](https://careers.worldia.com/pages/benefits-culture)
+
+## Optional
+
+- [People](https://careers.worldia.com/people): The team behind Worldia.
+- [Departments](https://careers.worldia.com/departments): Our departments.
+- [Locations](https://careers.worldia.com/locations): Office locations.
+- [Team stories](https://careers.worldia.com/stories): Stories from people who work at Worldia.
+- [Privacy policy](https://careers.worldia.com/privacy-policy): How candidate data is handled.
+- [Cookie policy](https://careers.worldia.com/cookie-policy): Cookie usage and consent.
+- [Data privacy](https://careers.worldia.com/data-privacy): Data privacy controls and rights.
+- [API catalog](https://careers.worldia.com/.well-known/api-catalog): Machine-readable discovery document for available APIs.

@@ -1,0 +1,214 @@
+generated: '2026-09-04'
+method: probed
+source: https://api.worldia.com/channels
+name: Worldia API Conventions
+description: >-
+  Cross-cutting runtime semantics of the Worldia production API, established by probing the
+  anonymously reachable surface of https://api.worldia.com on 2026-09-04. Worldia publishes
+  no developer documentation, so every statement below is read from live response headers
+  and bodies rather than from a docs page; where a convention could not be observed it is
+  recorded as unknown rather than guessed.
+docs: null
+docs_note: >-
+  No public developer portal, API reference or getting-started page exists. corp.worldia.com
+  carries no /api, /developers, /docs or /technology page (all 404), and the Hydra
+  apiDocumentation document the API advertises returns 404.
+
+api_style:
+  style: REST
+  framework: API Platform (Symfony)
+  framework_evidence: >-
+    Hydra Collection / PartialCollectionView response shapes, /contexts/{Type} JSON-LD
+    context documents, `x-operation-name: GET api/channels` response header, and the
+    Symfony error page rendered on unmatched routes.
+  base_url: https://api.worldia.com
+  alias_host:
+    host: https://api.prod.worldia.com
+    behavior: HTTP 301 to the same path on api.worldia.com
+    evidence: 'location: https://api.worldia.com/docs on GET https://api.prod.worldia.com/docs'
+
+content_negotiation:
+  vary: [X-Standard, Accept, Content-Type, Accept-Language, X-Channel]
+  representations:
+    - media_type: application/vnd.worldia+json
+      role: default
+      note: >-
+        Vendor-specific media type returned when no Accept is negotiated. Body is a
+        `{meta:{totalItems,itemsPerPage,currentPage}, data:[...]}` envelope.
+    - media_type: application/ld+json
+      role: hydra
+      note: >-
+        Returned for Accept: application/ld+json. Body is a Hydra collection
+        (@context/@id/@type/hydra:totalItems/hydra:member/hydra:view) and, on
+        supported collections, a hydra:search IriTemplate enumerating filter parameters.
+    - media_type: application/problem+json
+      role: errors
+  extension_suffixes:
+    supported: false
+    evidence: 'GET /channels.jsonld returns 404 (HTML Symfony error page); negotiation is header-driven only.'
+
+required_headers:
+  - header: X-Channel
+    required_for: channel-scoped collections
+    values: 'A registered channel code, e.g. B2C-WO, B2B-TEX, B2B-LTUR-DE'
+    evidence: >-
+      GET /inspirations without it returns HTTP 400 application/problem+json with detail
+      "You must set the \"X-Channel\" header to a registered channel."; with
+      `X-Channel: B2C-WO` the same call returns 200 with 971 items.
+    discoverable: true
+    discovery_note: >-
+      The set of valid values is itself readable anonymously at GET /channels (388 channels,
+      each with a code), which is unusual and useful — the multi-tenant key an agent needs is
+      published rather than issued.
+accepted_request_headers:
+  source: 'access-control-allow-headers on every response'
+  headers: [content-type, authorization, x-channel, x-currency, x-cloud-trace-context, traceparent, x-standard, x-domain]
+
+pagination:
+  style: page-number
+  params:
+    page: 'page (1-based)'
+    items_per_page: itemsPerPage
+  default_page_size: 30
+  vendor_envelope_fields: [meta.totalItems, meta.itemsPerPage, meta.currentPage]
+  hydra_fields:
+    total: 'hydra:totalItems'
+    view: 'hydra:view (hydra:first, hydra:last, hydra:next) as a PartialCollectionView'
+  evidence: >-
+    GET /channels returned hydra:totalItems 388 with hydra:view {first:/channels?page=1,
+    last:/channels?page=13, next:/channels?page=2}; GET /channels?itemsPerPage=1 honored
+    the page-size parameter.
+
+filtering:
+  style: 'Hydra IriTemplate (hydra:search) advertised per collection'
+  evidence: >-
+    GET /locations advertises hydra:template
+    "/locations{?addressComponents.type,addressComponents.type[],full_text_search_name,fuzzy_name,leaf,level,promoted,parent,root}"
+    with a hydra:mapping entry per variable. This is the closest thing Worldia publishes to
+    machine-readable parameter documentation, and it is per-collection rather than global.
+  note: >-
+    Because the Hydra apiDocumentation document 404s, these IriTemplates are only
+    discoverable by calling each collection — there is no single document listing them.
+
+identifiers:
+  style: IRI
+  note: >-
+    Resources identify themselves and reference each other by path IRI rather than by bare
+    id — e.g. "/channels/B2C-WO", "/locations/eu", "/templates/2394",
+    "/themes/smart_budget". Location IRIs are hierarchical
+    ("/locations/io/re/saint-paul/saint-gilles") and the entity carries a `hierarchy` field
+    mirroring that path.
+  blank_nodes: >-
+    Embedded value objects are given skolem IRIs under /.well-known/genid/{hash}
+    (RFC 9110-style blank-node identifiers), e.g. the `coords` object on a Location.
+
+vocabulary:
+  json_ld: true
+  contexts: json-ld/worldia-json-ld.yml
+  schema_org: >-
+    Location resources are typed https://schema.org/Place in the JSON-LD representation,
+    so the geographic core of the model is expressed in schema.org terms rather than a
+    bespoke vocabulary.
+
+caching:
+  etag: true
+  etag_evidence: 'etag: "269176eba0851c4a" on GET /channels'
+  cache_control: 'no-cache, private'
+  layer: 'Souin HTTP cache behind Caddy (cache-status: Souin; fwd=uri-miss)'
+  conditional_requests: 'ETag returned; If-None-Match not verified by this probe'
+
+request_id_tracing:
+  supported: true
+  response_headers: [x-trace-id, x-span-id, x-operation-name]
+  request_headers_accepted: [traceparent, x-cloud-trace-context]
+  standard: W3C Trace Context
+  note: >-
+    Worldia both emits trace identifiers and accepts W3C `traceparent` inbound, and the
+    company open-sources the Symfony OpenTelemetry bundle that produces them
+    (worldia/instrumentation-bundle — see packages/). Error bodies additionally carry a
+    `trace` field whose value matches the trace id, so a caller can quote a failing request
+    back to support. Uncaught-error HTML pages link the trace straight into Worldia's own
+    Grafana/Tempo, which is an internal URL and not usable by a caller.
+
+versioning:
+  scheme: none-observed
+  in_path: false
+  in_header: >-
+    An `X-Standard` header participates in content negotiation (it appears in Vary and in
+    access-control-allow-headers) but no documented value set was found; the values tried
+    (jsonld, hydra, openapi, swagger, json) changed nothing observable.
+  note: >-
+    No /v1 or /v2 path prefix exists (both 404). No version is advertised in any response
+    header. An integrator has no published signal for how breaking change is communicated.
+
+error_envelope:
+  format: 'RFC 7807-shaped application/problem+json'
+  fields: [type, title, status, detail, trace]
+  rfc9457_compliant: partial
+  compliance_note: >-
+    The media type and member names follow problem+json, but every response uses the same
+    placeholder `type` URI (https://tools.ietf.org/html/rfc2616#section-10) regardless of
+    the actual failure, so the machine-readable discriminator that gives RFC 9457 its value
+    is not usable. `status` is present on some responses and absent on others.
+  catalog: errors/worldia-problem-types.yml
+  exception: >-
+    JWT authentication failures bypass the problem+json envelope entirely and return
+    {"code":401,"message":"JWT Token not found"} — a second, inconsistent error shape.
+
+rate_limit_signaling:
+  headers_observed: []
+  note: >-
+    No X-RateLimit-*, RateLimit-* or Retry-After header appeared on any 200, 400, 401, 403,
+    404 or 405 response. See rate-limits/worldia-rate-limits.yml.
+
+idempotency:
+  coverage: none
+  mechanism: null
+  header: null
+  scope: []
+  note: >-
+    No Idempotency-Key header is accepted (it is absent from access-control-allow-headers)
+    and no replay-protection mechanism is documented or observable. The anonymously
+    reachable surface is read-only — every collection probed answers `allow: GET` (OPTIONS
+    returns 405 with `allow: GET`) — so no unauthenticated write can be double-fired. The
+    CORS policy advertises POST, PUT, PATCH and DELETE, so a write surface exists behind
+    authentication; whether it carries replay protection cannot be established without
+    credentials, and is recorded as none rather than unknown because nothing published
+    asserts one.
+
+dry_run_mode:
+  supported: unknown
+  note: 'No dry-run, preview or validate-only parameter is documented or discoverable anonymously.'
+
+reversibility:
+  grade: unknown
+  read_only_surface: true
+  reversals: []
+  note: >-
+    The anonymously reachable surface is read-only, so reversibility does not arise on it.
+    The authenticated surface is not read-only — the JSON-LD contexts describe Trip
+    lifecycle state that clearly implies mutation (Trip/state, Trip/savedAt,
+    Trip/archivedAt, Trip/scheduledDeletionDate, Trip/checkouts, Trip/payments, and a
+    Payment type whose context references a parent trip) — but Worldia publishes no
+    documentation for those operations, so no reversal operation and no reversal window can
+    be stated. This is recorded as unknown rather than `na` (which would wrongly assert the
+    API has no write surface) and rather than `documented` (which would credit a reversal
+    path nobody has published). NEVER infer a cancellation or refund window for a travel
+    booking API from field names — a wrong window here is a customer's money.
+
+expansion_and_sparse_fields:
+  supported: unknown
+  note: 'No expand/fields/include parameter appeared in any hydra:search IriTemplate observed.'
+
+localization:
+  accept_language: true
+  evidence: 'Accept-Language appears in the Vary header on every response.'
+  currency: 'An X-Currency request header is accepted (access-control-allow-headers); channels declare a defaultCurrencyCode.'
+
+cross_links:
+  errors: errors/worldia-problem-types.yml
+  authentication: authentication/worldia-authentication.yml
+  rate_limits: rate-limits/worldia-rate-limits.yml
+  lifecycle: lifecycle/worldia-lifecycle.yml
+  json_ld: json-ld/worldia-json-ld.yml
+  data_model: data-model/worldia-data-model.yml
