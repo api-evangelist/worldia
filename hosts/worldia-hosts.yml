@@ -1,0 +1,160 @@
+generated: '2026-10-20'
+method: derived
+source: the pre-flight dossier, apis.yml pointers, spec servers, well-known, vendors -- nothing fetched here
+generator: derive-hosts.py
+summary:
+  hosts: 12
+  own: 7
+  other_domain: 4
+  platform: 1
+  roles:
+  - api
+  - docs
+  - identity
+  - legal
+  - other
+  - source
+  - website
+hosts:
+- host: api.hsforms.com
+  found_by:
+  - contract-discovery
+  types: []
+  serves: []
+  registrable_domain: hsforms.com
+  role: api
+  relation: other-domain
+- host: api.share.hsforms.com
+  found_by:
+  - probed
+  - site-links
+  - namespace-probe
+  types: []
+  serves: []
+  title: Free Online Form Builder | Easily Create Custom Forms
+  status: 200
+  registrable_domain: hsforms.com
+  role: api
+  relation: other-domain
+- host: api.worldia.com
+  found_by:
+  - apis[]
+  - probed
+  - contract-discovery
+  - well-known
+  types: []
+  serves:
+  - api
+  registrable_domain: worldia.com
+  role: api
+  relation: own
+- host: apis.share.hsforms.com
+  found_by:
+  - probed
+  - site-links
+  - namespace-probe
+  types: []
+  serves: []
+  title: Free Online Form Builder | Easily Create Custom Forms
+  status: 200
+  registrable_domain: hsforms.com
+  role: api
+  relation: other-domain
+- host: careers.worldia.com
+  found_by:
+  - probed
+  - site-links
+  - well-known
+  types: []
+  serves: []
+  registrable_domain: worldia.com
+  role: other
+  relation: own
+- host: corp.worldia.com
+  found_by:
+  - pointer
+  - apis[]
+  - probed
+  - contract-discovery
+  - well-known
+  types:
+  - Website
+  - Support
+  - TermsOfService
+  serves:
+  - docs
+  registrable_domain: worldia.com
+  role: website
+  relation: own
+- host: experts-usa.worldia.com
+  found_by:
+  - probed
+  - site-links
+  - well-known
+  types: []
+  serves: []
+  registrable_domain: worldia.com
+  role: other
+  relation: own
+- host: github.com
+  found_by:
+  - pointer
+  types:
+  - GitHubOrganization
+  serves: []
+  registrable_domain: github.com
+  role: source
+  relation: platform
+- host: help.worldia.com
+  found_by:
+  - pointer
+  - probed
+  - site-links
+  - docs-index
+  - well-known
+  - vendor-detect
+  types:
+  - Documentation
+  serves:
+  - docs
+  - cdn
+  - hosting
+  vendor: cloudflare
+  registrable_domain: worldia.com
+  role: docs
+  relation: own
+- host: share.hsforms.com
+  found_by:
+  - pointer
+  - probed
+  - contract-discovery
+  - well-known
+  types:
+  - SignUp
+  serves: []
+  registrable_domain: hsforms.com
+  role: identity
+  relation: other-domain
+- host: static.worldia.com
+  found_by:
+  - pointer
+  - probed
+  - site-links
+  - contract-discovery
+  - well-known
+  types:
+  - PrivacyPolicy
+  serves: []
+  registrable_domain: worldia.com
+  role: legal
+  relation: own
+- host: worldia.com
+  found_by:
+  - probed
+  - site-links
+  - well-known
+  types: []
+  serves: []
+  registrable_domain: worldia.com
+  role: other
+  relation: own
